@@ -1,0 +1,43 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Dashboard</title>
+</head>
+<body>
+    <h1>Employee Dashboard</h1>
+
+    <h2>Welcome, {{ employee_name }}</h2>
+
+    {% with messages = get_flashed_messages() %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endwith %}
+
+    <p>Date: {{ attendance_date }}</p>
+    <p>Check In: {{ check_in or 'Not checked in' }}</p>
+    <p>Check Out: {{ check_out or 'Not checked out' }}</p>
+    <p>Working Hours: {{ working_hours or 'Not completed' }}</p>
+    <p>Status: {{ status or 'Not marked' }}</p>
+
+    <form action="/check_in" method="POST">
+        <button type="submit" {% if check_in %}disabled{% endif %}>
+            Check In
+        </button>
+    </form>
+
+    <br>
+
+    <form action="/check_out" method="POST">
+        <button type="submit" {% if not check_in or check_out %}disabled{% endif %}>
+            Check Out
+        </button>
+    </form>
+
+    <br>
+    <a href="/logout">Logout</a>
+</body>
+</html>

@@ -1,0 +1,191 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Analysis Report</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 25px;
+            background: #f4f7fb;
+            color: #222;
+        }
+        h1, h2 { color: #243b55; }
+        .filter, .panel {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px #00000012;
+        }
+        input, button {
+            padding: 9px;
+            margin: 5px;
+        }
+        button {
+            cursor: pointer;
+            background: #2457a7;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        .table-wrap { overflow-x: auto; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            min-width: 650px;
+        }
+        th, td {
+            padding: 11px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th { background: #eaf0f8; }
+        .chart-container {
+            position: relative;
+            height: 320px;
+            max-width: 750px;
+        }
+        .links { margin: 20px 0; }
+        .links a { margin-right: 18px; }
+    </style>
+</head>
+<body>
+
+    <h1>Employee Attendance Analysis</h1>
+
+    <form class="filter" method="GET" action="{{ url_for('attendance_report') }}">
+        <label for="month"><strong>Select Month:</strong></label>
+        <input type="month" id="month" name="month"
+               value="{{ selected_month }}" required>
+        <button type="submit">Generate Report</button>
+    </form>
+
+    <div class="panel">
+        <h2>Employee-wise Monthly Report</h2>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Employee Name</th>
+                        <th>Department</th>
+                        <th>Present</th>
+                        <th>Absent</th>
+                        <th>Leave</th>
+                        <th>Holiday</th>
+                        <th>Attendance %</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for employee in report %}
+                    <tr>
+                        <td>{{ employee.employee_name }}</td>
+                        <td>{{ employee.department }}</td>
+                        <td>{{ employee.present }}</td>
+                        <td>{{ employee.absent }}</td>
+                        <td>{{ employee.leave }}</td>
+                        <td>{{ employee.holiday }}</td>
+                        <td>{{ employee.percentage }}%</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7">No employee records found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <p><small>Attendance % = Present ÷ (Present + Absent) × 100. Leave and Holiday are excluded.</small></p>
+    </div>
+
+    <div class="panel">
+        <h2>Department-wise Summary</h2>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Department</th>
+                        <th>Employees</th>
+                        <th>Present Days</th>
+                        <th>Absent Days</th>
+                        <th>Leave Days</th>
+                        <th>Holiday Days</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for department, data in departments.items() %}
+                    <tr>
+                        <td>{{ department }}</td>
+                        <td>{{ data.employees }}</td>
+                        <td>{{ data.present }}</td>
+                        <td>{{ data.absent }}</td>
+                        <td>{{ data.leave }}</td>
+                        <td>{{ data.holiday }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6">No department data available.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>Absenteeism Chart</h2>
+        <p>Number of recorded absent days per department for the selected month.</p>
+        <div class="chart-container">
+            <canvas id="absenteeismChart"></canvas>
+        </div>
+        <p id="chartFallback" hidden>No absenteeism data available for this month.</p>
+    </div>
+
+    <div class="links">
+        <a href="{{ url_for('home') }}">Manager Dashboard</a>
+        <a href="{{ url_for('attendance') }}">Mark Attendance</a>
+        <a href="{{ url_for('attendance_records') }}">Attendance Records</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+
+    <script>
+        const departmentLabels = {{ departments.keys() | list | tojson }};
+        const absentDays = [
+            {% for department, data in departments.items() %}
+                {{ data.absent }},
+            {% endfor %}
+        ];
+
+        if (departmentLabels.length === 0) {
+            document.getElementById("chartFallback").hidden = false;
+        } else {
+            new Chart(document.getElementById("absenteeismChart"), {
+                type: "bar",
+                data: {
+                    labels: departmentLabels,
+                    datasets: [{
+                        label: "Absent Days",
+                        data: absentDays,
+                        backgroundColor: "#e76f51"
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { precision: 0 }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>

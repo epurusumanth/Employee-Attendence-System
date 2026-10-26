@@ -1,0 +1,41 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Daily Attendance</title>
+</head>
+<body>
+    <h1>Daily Attendance</h1>
+
+    <form action="/mark_attendance" method="POST">
+        <label>Date:</label>
+        <input type="date" name="attendance_date" required>
+        <br><br>
+
+        <label>Employee:</label>
+        <select name="employee_id" required>
+            <option value="">Select Employee</option>
+            {% for employee in employees %}
+            <option value="{{ employee.employee_id }}">
+                {{ employee.employee_code }} - {{ employee.employee_name }}
+            </option>
+            {% endfor %}
+        </select>
+        <br><br>
+
+        <label>Status:</label>
+        <select name="status" required>
+            <option value="Present">Present</option>
+            <option value="Absent">Absent</option>
+            <option value="Leave">Leave</option>
+            <option value="Holiday">Holiday</option>
+        </select>
+        <br><br>
+
+        <button type="submit">Mark Attendance</button>
+    </form>
+
+    <p><a href="/">Back to Employees</a></p>
+</body>
+</html>
