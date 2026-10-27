@@ -1,41 +1,221 @@
-
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Daily Attendance</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Attendance | Employee Attendance System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f3f6fb;
+            color: #1e293b;
+        }
+
+        .topbar {
+            background: #142b4a;
+            color: white;
+            padding: 22px 5%;
+        }
+
+        .topbar h1 {
+            margin: 0;
+            font-size: 25px;
+        }
+
+        .topbar p {
+            margin: 8px 0 0;
+            color: #cbd5e1;
+            font-size: 14px;
+        }
+
+        .main {
+            max-width: 850px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .panel {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(15, 23, 42, 0.05);
+        }
+
+        .panel h2 {
+            margin: 0 0 8px;
+            color: #17365d;
+            font-size: 23px;
+        }
+
+        .description {
+            color: #64748b;
+            margin: 0 0 28px;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 9px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #334155;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            background: white;
+            color: #1e293b;
+            font-size: 15px;
+            outline: none;
+        }
+
+        input:focus, select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 14px;
+            background: #166534;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .submit-button:hover {
+            background: #14532d;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 22px;
+            color: #1d4ed8;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .note {
+            margin-top: 22px;
+            padding: 14px;
+            background: #eff6ff;
+            border-radius: 8px;
+            color: #1e40af;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 600px) {
+            .topbar {
+                padding: 20px;
+            }
+
+            .main {
+                margin: 22px auto;
+                padding: 0 14px;
+            }
+
+            .panel {
+                padding: 22px;
+            }
+        }
+    </style>
 </head>
+
 <body>
-    <h1>Daily Attendance</h1>
 
-    <form action="/mark_attendance" method="POST">
-        <label>Date:</label>
-        <input type="date" name="attendance_date" required>
-        <br><br>
+    <header class="topbar">
+        <h1>Employee Attendance System</h1>
+        <p>Manager Portal · Daily Attendance Management</p>
+    </header>
 
-        <label>Employee:</label>
-        <select name="employee_id" required>
-            <option value="">Select Employee</option>
-            {% for employee in employees %}
-            <option value="{{ employee.employee_id }}">
-                {{ employee.employee_code }} - {{ employee.employee_name }}
-            </option>
-            {% endfor %}
-        </select>
-        <br><br>
+    <main class="main">
+        <section class="panel">
 
-        <label>Status:</label>
-        <select name="status" required>
-            <option value="Present">Present</option>
-            <option value="Absent">Absent</option>
-            <option value="Leave">Leave</option>
-            <option value="Holiday">Holiday</option>
-        </select>
-        <br><br>
+            <h2>Mark Daily Attendance</h2>
+            <p class="description">
+                Select the date, employee and attendance status to record
+                the employee's attendance.
+            </p>
 
-        <button type="submit">Mark Attendance</button>
-    </form>
+            <form action="/mark_attendance" method="POST">
 
-    <p><a href="/">Back to Employees</a></p>
+                <div class="form-group">
+                    <label for="attendance_date">Attendance Date</label>
+                    <input
+                        type="date"
+                        id="attendance_date"
+                        name="attendance_date"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="employee_id">Select Employee</label>
+                    <select id="employee_id" name="employee_id" required>
+                        <option value="">Choose an employee</option>
+
+                        {% for employee in employees %}
+                        <option value="{{ employee.employee_id }}">
+                            {{ employee.employee_code }} - {{ employee.employee_name }}
+                        </option>
+                        {% endfor %}
+
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="status">Attendance Status</label>
+                    <select id="status" name="status" required>
+                        <option value="Present">Present</option>
+                        <option value="Absent">Absent</option>
+                        <option value="Leave">Leave</option>
+                        <option value="Holiday">Holiday</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="submit-button">
+                    Submit Attendance
+                </button>
+
+            </form>
+
+            <div class="note">
+                <strong>Note:</strong> Select the correct employee and date.
+                If attendance for that employee and date is already recorded,
+                your existing backend duplicate-check logic will determine
+                whether another entry is allowed.
+            </div>
+
+            <a class="back-link" href="{{ url_for('home') }}">
+                ← Back to Manager Dashboard
+            </a>
+
+        </section>
+    </main>
+
 </body>
 </html>
+```

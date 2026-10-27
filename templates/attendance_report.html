@@ -1,166 +1,426 @@
-
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Attendance Analysis Report</title>
+    <title>Attendance Analytics | Employee Attendance System</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
+            margin: 0;
             font-family: Arial, sans-serif;
-            margin: 25px;
-            background: #f4f7fb;
-            color: #222;
+            background: #f3f6fb;
+            color: #1e293b;
         }
-        h1, h2 { color: #243b55; }
-        .filter, .panel {
+
+        .topbar {
+            background: #142b4a;
+            color: white;
+            padding: 23px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .topbar h1 {
+            margin: 0;
+            font-size: 25px;
+        }
+
+        .topbar p {
+            color: #cbd5e1;
+            margin: 8px 0 0;
+            font-size: 14px;
+        }
+
+        .logout {
             background: white;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px #00000012;
+            color: #142b4a;
+            padding: 10px 16px;
+            border-radius: 7px;
+            text-decoration: none;
+            font-weight: bold;
         }
-        input, button {
-            padding: 9px;
-            margin: 5px;
+
+        .main {
+            max-width: 1450px;
+            margin: 30px auto;
+            padding: 0 24px;
         }
+
+        .page-heading {
+            margin-bottom: 24px;
+        }
+
+        .page-heading h2 {
+            margin: 0 0 8px;
+            font-size: 26px;
+        }
+
+        .page-heading p {
+            margin: 0;
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .panel {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 24px;
+            box-shadow: 0 3px 12px rgba(15, 23, 42, 0.04);
+        }
+
+        .panel h2 {
+            margin: 0 0 8px;
+            color: #17365d;
+            font-size: 20px;
+        }
+
+        .description {
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 0 0 22px;
+        }
+
+        .filter-form {
+            display: flex;
+            align-items: end;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        input[type="month"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            font-size: 14px;
+        }
+
         button {
-            cursor: pointer;
+            padding: 12px 18px;
+            border: none;
+            border-radius: 7px;
             background: #2457a7;
             color: white;
-            border: none;
-            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
         }
-        .table-wrap { overflow-x: auto; }
+
+        button:hover {
+            background: #1d4587;
+        }
+
+        .table-wrap {
+            width: 100%;
+            overflow-x: auto;
+        }
+
         table {
             width: 100%;
+            min-width: 700px;
             border-collapse: collapse;
-            background: white;
-            min-width: 650px;
         }
+
         th, td {
-            padding: 11px;
+            padding: 14px 12px;
             text-align: left;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 14px;
         }
-        th { background: #eaf0f8; }
+
+        th {
+            background: #edf3fb;
+            color: #334155;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .percentage {
+            display: inline-block;
+            min-width: 65px;
+            padding: 6px 9px;
+            text-align: center;
+            border-radius: 20px;
+            background: #dcfce7;
+            color: #166534;
+            font-weight: bold;
+        }
+
+        .empty {
+            text-align: center;
+            color: #64748b;
+            padding: 25px;
+        }
+
         .chart-container {
             position: relative;
-            height: 320px;
-            max-width: 750px;
+            width: 100%;
+            height: 350px;
         }
-        .links { margin: 20px 0; }
-        .links a { margin-right: 18px; }
+
+        .note {
+            margin-top: 18px;
+            padding: 14px;
+            background: #eff6ff;
+            color: #1e40af;
+            border-radius: 8px;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .navigation {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 25px 0;
+        }
+
+        .navigation a {
+            display: inline-block;
+            padding: 11px 15px;
+            border-radius: 7px;
+            background: white;
+            border: 1px solid #dbe3ef;
+            color: #1d4ed8;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .navigation a:hover {
+            background: #dbeafe;
+        }
+
+        footer {
+            text-align: center;
+            padding: 22px;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        @media (max-width: 600px) {
+            .topbar {
+                padding: 20px;
+            }
+
+            .topbar h1 {
+                font-size: 21px;
+            }
+
+            .main {
+                padding: 0 14px;
+                margin-top: 20px;
+            }
+
+            .panel {
+                padding: 18px;
+            }
+
+            .chart-container {
+                height: 280px;
+            }
+        }
     </style>
 </head>
+
 <body>
 
-    <h1>Employee Attendance Analysis</h1>
-
-    <form class="filter" method="GET" action="{{ url_for('attendance_report') }}">
-        <label for="month"><strong>Select Month:</strong></label>
-        <input type="month" id="month" name="month"
-               value="{{ selected_month }}" required>
-        <button type="submit">Generate Report</button>
-    </form>
-
-    <div class="panel">
-        <h2>Employee-wise Monthly Report</h2>
-        <div class="table-wrap">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Employee Name</th>
-                        <th>Department</th>
-                        <th>Present</th>
-                        <th>Absent</th>
-                        <th>Leave</th>
-                        <th>Holiday</th>
-                        <th>Attendance %</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for employee in report %}
-                    <tr>
-                        <td>{{ employee.employee_name }}</td>
-                        <td>{{ employee.department }}</td>
-                        <td>{{ employee.present }}</td>
-                        <td>{{ employee.absent }}</td>
-                        <td>{{ employee.leave }}</td>
-                        <td>{{ employee.holiday }}</td>
-                        <td>{{ employee.percentage }}%</td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="7">No employee records found.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+    <header class="topbar">
+        <div>
+            <h1>Employee Attendance System</h1>
+            <p>Manager Portal · Reports and Analytics</p>
         </div>
-        <p><small>Attendance % = Present ÷ (Present + Absent) × 100. Leave and Holiday are excluded.</small></p>
-    </div>
+        <a class="logout" href="{{ url_for('logout') }}">Logout ↗</a>
+    </header>
 
-    <div class="panel">
-        <h2>Department-wise Summary</h2>
-        <div class="table-wrap">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Department</th>
-                        <th>Employees</th>
-                        <th>Present Days</th>
-                        <th>Absent Days</th>
-                        <th>Leave Days</th>
-                        <th>Holiday Days</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for department, data in departments.items() %}
-                    <tr>
-                        <td>{{ department }}</td>
-                        <td>{{ data.employees }}</td>
-                        <td>{{ data.present }}</td>
-                        <td>{{ data.absent }}</td>
-                        <td>{{ data.leave }}</td>
-                        <td>{{ data.holiday }}</td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="6">No department data available.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <main class="main">
 
-    <div class="panel">
-        <h2>Absenteeism Chart</h2>
-        <p>Number of recorded absent days per department for the selected month.</p>
-        <div class="chart-container">
-            <canvas id="absenteeismChart"></canvas>
-        </div>
-        <p id="chartFallback" hidden>No absenteeism data available for this month.</p>
-    </div>
+        <section class="page-heading">
+            <h2>Attendance Analytics</h2>
+            <p>Review monthly attendance, employee performance and department absenteeism.</p>
+        </section>
 
-    <div class="links">
-        <a href="{{ url_for('home') }}">Manager Dashboard</a>
-        <a href="{{ url_for('attendance') }}">Mark Attendance</a>
-        <a href="{{ url_for('attendance_records') }}">Attendance Records</a>
-        <a href="{{ url_for('logout') }}">Logout</a>
-    </div>
+        <section class="panel">
+            <h2>Report Period</h2>
+            <p class="description">
+                Select a month to generate the corresponding attendance report.
+            </p>
+
+            <form class="filter-form" method="GET"
+                  action="{{ url_for('attendance_report') }}">
+
+                <div class="filter-group">
+                    <label for="month">Select Month</label>
+                    <input type="month" id="month" name="month"
+                           value="{{ selected_month }}" required>
+                </div>
+
+                <button type="submit">Generate Report</button>
+            </form>
+        </section>
+
+        <section class="panel">
+            <h2>Employee-wise Monthly Report</h2>
+            <p class="description">
+                Attendance totals and attendance percentage for each employee.
+            </p>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>S.No</th>
+                            <th>Employee Name</th>
+                            <th>Department</th>
+                            <th>Present</th>
+                            <th>Absent</th>
+                            <th>Leave</th>
+                            <th>Holiday</th>
+                            <th>Attendance %</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for employee in report %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td><strong>{{ employee.employee_name }}</strong></td>
+                            <td>{{ employee.department }}</td>
+                            <td>{{ employee.present }}</td>
+                            <td>{{ employee.absent }}</td>
+                            <td>{{ employee.leave }}</td>
+                            <td>{{ employee.holiday }}</td>
+                            <td>
+                                <span class="percentage">
+                                    {{ employee.percentage }}%
+                                </span>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="8" class="empty">
+                                No employee records found for this month.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="note">
+                <strong>Calculation:</strong>
+                Attendance % = Present ÷ (Present + Absent) × 100.
+                Leave and Holiday are excluded from this calculation.
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>Department-wise Summary</h2>
+            <p class="description">
+                Compare recorded attendance totals across departments.
+            </p>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Department</th>
+                            <th>Employees</th>
+                            <th>Present Days</th>
+                            <th>Absent Days</th>
+                            <th>Leave Days</th>
+                            <th>Holiday Days</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for department, data in departments.items() %}
+                        <tr>
+                            <td><strong>{{ department }}</strong></td>
+                            <td>{{ data.employees }}</td>
+                            <td>{{ data.present }}</td>
+                            <td>{{ data.absent }}</td>
+                            <td>{{ data.leave }}</td>
+                            <td>{{ data.holiday }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="empty">
+                                No department data available for this month.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>Department Absenteeism Chart</h2>
+            <p class="description">
+                Number of recorded absent days per department for the selected month.
+            </p>
+
+            <div class="chart-container" id="chartContainer">
+                <canvas id="absenteeismChart"></canvas>
+            </div>
+
+            <p id="chartFallback" class="empty" hidden>
+                No absenteeism data available for this month.
+            </p>
+        </section>
+
+        <nav class="navigation">
+            <a href="{{ url_for('home') }}">← Manager Dashboard</a>
+            <a href="{{ url_for('attendance') }}">Mark Attendance</a>
+            <a href="{{ url_for('attendance_records') }}">Attendance Records</a>
+        </nav>
+
+    </main>
+
+    <footer>
+        Employee Attendance System · Attendance Analytics
+    </footer>
 
     <script>
         const departmentLabels = {{ departments.keys() | list | tojson }};
         const absentDays = [
             {% for department, data in departments.items() %}
-                {{ data.absent }},
+                {{ data.absent }}{% if not loop.last %},{% endif %}
             {% endfor %}
         ];
 
         if (departmentLabels.length === 0) {
+            document.getElementById("chartContainer").hidden = true;
             document.getElementById("chartFallback").hidden = false;
         } else {
             new Chart(document.getElementById("absenteeismChart"), {
@@ -170,16 +430,39 @@
                     datasets: [{
                         label: "Absent Days",
                         data: absentDays,
-                        backgroundColor: "#e76f51"
+                        backgroundColor: "#e76f51",
+                        borderRadius: 6,
+                        maxBarThickness: 55
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: "top"
+                        },
+                        tooltip: {
+                            enabled: true
+                        }
+                    },
                     scales: {
                         y: {
                             beginAtZero: true,
-                            ticks: { precision: 0 }
+                            ticks: {
+                                precision: 0
+                            },
+                            title: {
+                                display: true,
+                                text: "Number of Absent Days"
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: "Department"
+                            }
                         }
                     }
                 }
@@ -189,3 +472,4 @@
 
 </body>
 </html>
+```

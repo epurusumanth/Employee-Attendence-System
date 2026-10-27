@@ -4,40 +4,339 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Dashboard</title>
+    <title>Employee Dashboard | Attendance System</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f1f5f9;
+            color: #172b4d;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: #173b60;
+            color: white;
+            padding: 18px 6%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .brand {
+            font-size: 18px;
+            font-weight: bold;
+            letter-spacing: 0.3px;
+        }
+
+        .logout {
+            text-decoration: none;
+            color: white;
+            border: 1px solid rgba(255,255,255,0.5);
+            padding: 9px 16px;
+            border-radius: 7px;
+            font-size: 13px;
+            transition: background 0.2s;
+        }
+
+        .logout:hover {
+            background: rgba(255,255,255,0.12);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 35px auto;
+            padding: 0 22px;
+        }
+
+        .welcome-section {
+            margin-bottom: 28px;
+        }
+
+        .welcome-section h1 {
+            font-size: 29px;
+            margin-bottom: 10px;
+        }
+
+        .welcome-section p {
+            color: #718096;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .messages {
+            margin-bottom: 22px;
+        }
+
+        .message {
+            padding: 13px 16px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            background: #e6f4ea;
+            border: 1px solid #b7dfc3;
+            color: #216e39;
+            font-size: 14px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 22px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 13px;
+            box-shadow: 0 5px 20px rgba(23, 43, 77, 0.05);
+            border: 1px solid #e7edf5;
+        }
+
+        .card h2 {
+            font-size: 18px;
+            margin-bottom: 22px;
+        }
+
+        .date-badge {
+            display: inline-block;
+            padding: 8px 12px;
+            background: #eaf2fb;
+            color: #245b89;
+            border-radius: 7px;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        .detail-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid #edf1f6;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: #718096;
+            font-size: 13px;
+        }
+
+        .detail-value {
+            font-size: 14px;
+            font-weight: bold;
+            text-align: right;
+            overflow-wrap: anywhere;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            background: #edf2f7;
+            color: #4a5568;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .actions-card p {
+            color: #718096;
+            font-size: 14px;
+            line-height: 1.7;
+            margin-bottom: 22px;
+        }
+
+        .action-form {
+            margin-bottom: 15px;
+        }
+
+        .action-button {
+            width: 100%;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s, opacity 0.2s;
+        }
+
+        .check-in {
+            background: #218653;
+        }
+
+        .check-in:hover:not(:disabled) {
+            background: #176b40;
+        }
+
+        .check-out {
+            background: #245b89;
+        }
+
+        .check-out:hover:not(:disabled) {
+            background: #173f65;
+        }
+
+        .action-button:disabled {
+            background: #cbd5e1;
+            color: #64748b;
+            cursor: not-allowed;
+        }
+
+        .action-note {
+            font-size: 12px;
+            color: #8491a5;
+            margin-top: 18px;
+            line-height: 1.7;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 25px;
+            color: #8491a5;
+            font-size: 12px;
+        }
+
+        @media (max-width: 700px) {
+            .container {
+                margin-top: 25px;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome-section h1 {
+                font-size: 24px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
+
 <body>
-    <h1>Employee Dashboard</h1>
 
-    <h2>Welcome, {{ employee_name }}</h2>
+    <header class="navbar">
+        <div class="brand">EMPLOYEE ATTENDANCE SYSTEM</div>
+        <a class="logout" href="/logout">Logout</a>
+    </header>
 
-    {% with messages = get_flashed_messages() %}
-        {% for message in messages %}
-            <p>{{ message }}</p>
-        {% endfor %}
-    {% endwith %}
+    <main class="container">
 
-    <p>Date: {{ attendance_date }}</p>
-    <p>Check In: {{ check_in or 'Not checked in' }}</p>
-    <p>Check Out: {{ check_out or 'Not checked out' }}</p>
-    <p>Working Hours: {{ working_hours or 'Not completed' }}</p>
-    <p>Status: {{ status or 'Not marked' }}</p>
+        <section class="welcome-section">
+            <h1>Welcome, {{ employee_name }}!</h1>
+            <p>Manage your daily attendance and keep track of your working hours.</p>
+        </section>
 
-    <form action="/check_in" method="POST">
-        <button type="submit" {% if check_in %}disabled{% endif %}>
-            Check In
-        </button>
-    </form>
+        <div class="messages">
+            {% with messages = get_flashed_messages() %}
+                {% for message in messages %}
+                    <div class="message">{{ message }}</div>
+                {% endfor %}
+            {% endwith %}
+        </div>
 
-    <br>
+        <div class="dashboard-grid">
 
-    <form action="/check_out" method="POST">
-        <button type="submit" {% if not check_in or check_out %}disabled{% endif %}>
-            Check Out
-        </button>
-    </form>
+            <section class="card">
+                <h2>Today's Attendance</h2>
 
-    <br>
-    <a href="/logout">Logout</a>
+                <div class="date-badge">
+                    Date: {{ attendance_date }}
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Check In</span>
+                    <span class="detail-value">
+                        {{ check_in or 'Not checked in' }}
+                    </span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Check Out</span>
+                    <span class="detail-value">
+                        {{ check_out or 'Not checked out' }}
+                    </span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Working Hours</span>
+                    <span class="detail-value">
+                        {{ working_hours or 'Not completed' }}
+                    </span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Attendance Status</span>
+                    <span class="detail-value">
+                        <span class="status">{{ status or 'Not marked' }}</span>
+                    </span>
+                </div>
+            </section>
+
+            <section class="card actions-card">
+                <h2>Attendance Actions</h2>
+
+                <p>
+                    Use the buttons below to record your arrival and departure
+                    for today's work.
+                </p>
+
+                <form class="action-form" action="/check_in" method="POST">
+                    <button
+                        type="submit"
+                        class="action-button check-in"
+                        {% if check_in %}disabled{% endif %}
+                    >
+                        {% if check_in %}
+                            Check In Completed
+                        {% else %}
+                            Check In
+                        {% endif %}
+                    </button>
+                </form>
+
+                <form class="action-form" action="/check_out" method="POST">
+                    <button
+                        type="submit"
+                        class="action-button check-out"
+                        {% if not check_in or check_out %}disabled{% endif %}
+                    >
+                        {% if check_out %}
+                            Check Out Completed
+                        {% else %}
+                            Check Out
+                        {% endif %}
+                    </button>
+                </form>
+
+                <div class="action-note">
+                    Check In can be recorded once per day. Check Out becomes
+                    available after Check In is recorded.
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <footer class="footer">
+        Employee Attendance Management Portal
+    </footer>
+
 </body>
 </html>
